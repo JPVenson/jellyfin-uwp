@@ -10,6 +10,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace Jellyfin.Controls;
 
+/// <summary>
+/// Represents a custom web view control for interacting with a Jellyfin server.
+/// </summary>
+/// <remarks>This control is designed to provide a seamless integration with a Jellyfin server, enabling
+/// navigation, gamepad input handling, and full-screen mode support. It also manages back navigation and handles
+/// navigation errors gracefully.</remarks>
 public sealed partial class JellyfinWebView : UserControl, IDisposable
 {
     private readonly GamepadManager _gamepadManager;
