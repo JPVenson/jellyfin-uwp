@@ -1,7 +1,9 @@
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Jellyfin.Core;
+using Windows.Data.Json;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -78,14 +80,36 @@ public sealed partial class OnBoarding : Page
 
         // add scheme to uri if not included
         Uri testUri = new UriBuilder(uriString).Uri;
+        HttpResponseMessage response;
 
-        // check URL exists
-        HttpWebRequest request;
-        HttpWebResponse response;
         try
         {
-            request = (HttpWebRequest)WebRequest.Create(testUri);
-            response = (HttpWebResponse)(await request.GetResponseAsync());
+            var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Jellyfin-UWP-App");
+            response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, testUri)).ConfigureAwait(true);
+            if (response.StatusCode is HttpStatusCode.Moved or HttpStatusCode.Redirect)
+            {
+                // Handle redirect
+                var newLocation = response.Headers.Location?.ToString();
+                if (!string.IsNullOrEmpty(newLocation))
+                {
+                    uriString = newLocation;
+                }
+                else
+                {
+                    return false; // No valid redirect location found
+                }
+            }
+            else if (response.StatusCode != HttpStatusCode.OK)
+            {
+                UpdateErrorMessage((int)response.StatusCode);
+                return false;
+            }
+
+            var systemApiUrl = new UriBuilder(uriString);
+            systemApiUrl.Path = "/System/Info/Public";
+            response = await httpClient.GetAsync(systemApiUrl.Uri).ConfigureAwait(true);
         }
         catch (WebException ex)
         {
@@ -122,12 +146,22 @@ public sealed partial class OnBoarding : Page
             return false;
         }
 
-        var encoding = System.Text.Encoding.GetEncoding(response.CharacterSet);
-        using (var reader = new System.IO.StreamReader(response.GetResponseStream(), encoding))
+        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+        if (!JsonObject.TryParse(result, out JsonObject jsonObject))
         {
-            string responseText = reader.ReadToEnd();
-            if (!responseText.Contains("Jellyfin"))
+            if (jsonObject.GetNamedString("ProductName") != "Jellyfin Server")
             {
+                txtError.Visibility = Visibility.Visible;
+                txtError.Text = $"The url provided does not seem to point to a Jellyfin server.";
+                return false;
+            }
+
+            var version = jsonObject.GetNamedString("Version");
+            if (!Version.TryParse(version, out var jfVersion) || jfVersion < Central.MinimumSupportedVersion)
+            {
+                txtError.Visibility = Visibility.Visible;
+                txtError.Text = $"The minimum supported Server version for this client is '{Central.MinimumSupportedVersion}' but your server runs on version '{jfVersion}'. Please update your Server.";
                 return false;
             }
         }
