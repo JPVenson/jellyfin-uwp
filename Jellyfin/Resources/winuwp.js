@@ -229,7 +229,7 @@ var uwpDisplayMode = (function (WindowsProxies) {
     const SUPPORT_4K_VP9_PREFIX = "video/mp4;codecs=\"vp09\";" + SUPPORT_4K_FEATURES_AFFIX;
     const SUPPORT_HDR_AFFIX = ",hdr=1";
     const SUPPORT_DV_AFFIX = ",ext-profile=dvhe.05";
-
+    // await uwpDisplayMode.isTypeSupportedAsync('video/x-matroska;codecs="hevc";features="decode-res-x=3840,decode-res-y=2160,decode-bitrate=21655728,decode-fps=23.976025,decode-bpc=10,display-res-x=3840,display-res-y=2160,display-bpc=10"')
     // Strings useful for checking various kinds of video support
     public.videoTypes = {
         fullhd: "video/mp4;codecs=\"avc1,mp4a\";features=\"display-res-x=1920,display-res-y=1080,display-bpc=8\"",
@@ -247,7 +247,14 @@ var uwpDisplayMode = (function (WindowsProxies) {
     };
 
     public.buildTypeString = function (source, stream) {
-        return `${this.getMimeType(source.Container)};codecs="${stream.Codec}";features="decode-res-x=${stream.Width},decode-res-y=${stream.Height},decode-bitrate=${stream.Bitrate},decode-fps=${stream.AverageFrameRate},decode-bpc=${stream.BitDepth},display-res-x=${stream.Width},display-res-y=${stream.Height},display-bpc=${stream.BitDepth}"`
+        var features = `features="decode-res-x=${stream.Width},decode-res-y=${stream.Height},decode-bitrate=${stream.BitRate},decode-fps=${stream.AverageFrameRate},decode-bpc=${stream.BitDepth},display-res-x=${stream.Width},display-res-y=${stream.Height},display-bpc=${stream.BitDepth}`;
+        if (stream.VideoRange == "HDR") {
+            features += SUPPORT_HDR_AFFIX;
+        }
+        if (stream.DvVersionMajor != null) {
+            // supported maybe later.
+        }
+        return `${this.getMimeType(source.Container)};codecs="${stream.Codec}";${features}"`
     }
 
     public.getMimeType = function (container) {
@@ -272,14 +279,17 @@ var uwpDisplayMode = (function (WindowsProxies) {
     // Sample function which switches the display to 4K Dolby Vision mode,
     // if supported. Returns false otherwise, and prints warnings to the console.
     public.switchTVModeTo4KDVAsync = async function (source, stream) {
-        var mediaString = this.buildTypeString(source, stream);
-        // Validate display supports Dolby Vision and HDCP2
-        if (!await this.isTypeSupportedAsync(mediaString)) {
-            console.warn("Display does not support 4K Dolby Vision");
-            return false;
-        }
+        //var mediaString = this.buildTypeString(source, stream);
+        //// Validate display supports Dolby Vision and HDCP2
+        //if (!await this.isTypeSupportedAsync(mediaString)) {
+        //    console.warn("Display does not support 4K Dolby Vision");
+        //    return false;
+        //}
 
         let hdmiInfo = WindowsProxies.Graphics.Display.Core.HdmiDisplayInformation.getForCurrentView();
+        if (hdmiInfo == null) {
+            return false;
+        }
         let modes = hdmiInfo.getSupportedDisplayModes();
 
         // Find the Dolby Vision mode
@@ -301,14 +311,17 @@ var uwpDisplayMode = (function (WindowsProxies) {
     // Sample function which switches the display to 4K HDR mode,
     // if supported. Returns false otherwise, and prints warnings to the console.
     public.switchTVModeTo4KHDRAsync = async function (source, stream) {
-        var mediaString = this.buildTypeString(source, stream);
-        // Validate display supports 4K HDR and HDCP2
-        if (!await this.isTypeSupportedAsync(mediaString)) {
-            console.warn("Display does not support 4K HDR");
-            return false;
-        }
+        //var mediaString = this.buildTypeString(source, stream);
+        //// Validate display supports 4K HDR and HDCP2
+        //if (!await this.isTypeSupportedAsync(mediaString)) {
+        //    console.warn("Display does not support 4K HDR");
+        //    return false;
+        //}
 
         let hdmiInfo = WindowsProxies.Graphics.Display.Core.HdmiDisplayInformation.getForCurrentView();
+        if (hdmiInfo == null) {
+            return false;
+        }
         let modes = hdmiInfo.getSupportedDisplayModes();
 
         // Find the appropriate mode
@@ -330,14 +343,17 @@ var uwpDisplayMode = (function (WindowsProxies) {
     // Sample function which switches the display to 4K SDR mode,
     // if supported. Returns false otherwise, and prints warnings to the console.
     public.switchTVModeTo4KSDRAsync = async function (source, stream) {
-        var mediaString = this.buildTypeString(source, stream);
-        // Validate display supports 4K SDR and HDCP
-        if (!await this.isTypeSupportedAsync(mediaString)) {
-            console.warn("Display does not support 4K Resolution");
-            return false;
-        }
+        //var mediaString = this.buildTypeString(source, stream);
+        //// Validate display supports 4K SDR and HDCP
+        //if (!await this.isTypeSupportedAsync(mediaString)) {
+        //    console.warn("Display does not support 4K Resolution");
+        //    return false;
+        //}
 
         let hdmiInfo = WindowsProxies.Graphics.Display.Core.HdmiDisplayInformation.getForCurrentView();
+        if (hdmiInfo == null) {
+            return false;
+        }
         let modes = hdmiInfo.getSupportedDisplayModes();
 
         // Find the appropriate mode
@@ -363,6 +379,9 @@ var uwpDisplayMode = (function (WindowsProxies) {
     public.switchTVModeTo50HzAsync = async function (source, stream) {
         var mediaString = this.buildTypeString(source, stream);
         let hdmiInfo = WindowsProxies.Graphics.Display.Core.HdmiDisplayInformation.getForCurrentView();
+        if (hdmiInfo == null) {
+            return false;
+        }
         let modes = hdmiInfo.getSupportedDisplayModes();
 
         // Find the first 50Hz mode
@@ -391,13 +410,13 @@ var uwpDisplayMode = (function (WindowsProxies) {
             // If you only need SL2000, use "com.microsoft.playready.recommendation" instead.
             // For more information see:
             // https://learn.microsoft.com/en-us/playready/overview/key-system-strings
-            let playReadyVersion = "com.microsoft.playready.recommendation.3000";
+            let playReadyVersion = "na";
             let protCap = WindowsProxies.Media.Protection.ProtectionCapabilities();
             let result = protCap.isTypeSupported(type, playReadyVersion);
 
             // Continue checking until we get a non-maybe result. This API will not return
-            // "maybe" for more than 10 seconds.
-            while (result == WindowsProxies.Media.Protection.ProtectionCapabilityResult.maybe) {
+            // "maybe" for more than 5 seconds.
+            for (let i = 0; i < 5 && result == WindowsProxies.Media.Protection.ProtectionCapabilityResult.maybe; i++) {
                 await new Promise(r => setTimeout(r, 100));
                 result = protCap.isTypeSupported(type, playReadyVersion);
             }
