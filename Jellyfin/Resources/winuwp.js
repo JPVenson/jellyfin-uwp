@@ -159,7 +159,7 @@ class UwpXboxHdmiSetupPlugin {
 
     async intercept(options) {
         const item = options.item;
-        if (!item) {
+        if (!item || window.IsXboxHdmiIntegrationAllowed != true) {
             return;
         }
         if ("mediaSourceId" in options) {

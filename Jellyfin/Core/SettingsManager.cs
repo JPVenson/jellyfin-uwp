@@ -12,6 +12,7 @@ public class SettingsManager : ISettingsManager
     private string _settingsServer = "SERVER";
     private string _autoResolution = "AUTO_RESOLUTION";
     private string _autoRefreshRate = "AUTO_REFRESH_RATE";
+    private string _attemptHdmiintegration = "ATTEMPT_HDMI_SETUP";
 
     private ApplicationDataContainer LocalSettings => ApplicationData.Current.LocalSettings;
 
@@ -63,6 +64,15 @@ public class SettingsManager : ISettingsManager
     {
         get => GetProperty<bool>(_autoRefreshRate);
         set => SetProperty(_autoRefreshRate, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Xbox HDMI integration is allowed.
+    /// </summary>
+    public bool IsXboxHdmiIntegrationAllowed
+    {
+        get => GetProperty<bool>(_attemptHdmiintegration);
+        set => SetProperty(_attemptHdmiintegration, value);
     }
 
     private void SetProperty(string propertyName, object value)

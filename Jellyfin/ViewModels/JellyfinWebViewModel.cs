@@ -175,9 +175,13 @@ public sealed class JellyfinWebViewModel : ObservableObject, IDisposable
 
     private async Task AddWinRTAdapter()
     {
-        await Task.CompletedTask;
         var dispatchAdapter = new WinRTAdapter.DispatchAdapter();
         WebView.CoreWebView2.AddHostObjectToScript("Windows", dispatchAdapter.WrapNamedObject("Windows", dispatchAdapter));
+
+        await WebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
+            $$"""
+            IsXboxHdmiIntegrationAllowed = {{Central.Settings.IsXboxHdmiIntegrationAllowed.ToString().ToLower()}}
+            """);
     }
 
     private async Task InjectNativeShellScript()
@@ -201,7 +205,7 @@ public sealed class JellyfinWebViewModel : ObservableObject, IDisposable
             var jsonMessage = args.TryGetWebMessageAsString();
             if (JsonObject.TryParse(jsonMessage, out var argsJson))
             {
-                _messageHandler.HandleJsonNotification(argsJson).GetAwaiter().GetResult();
+                _messageHandler.HandleJsonNotification(argsJson);
             }
             else
             {

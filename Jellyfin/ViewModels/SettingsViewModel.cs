@@ -24,6 +24,7 @@ public sealed class SettingsViewModel : ObservableObject, IDisposable
     private HdmiDisplayInformation _hdmiDisplayInformation;
     private bool _autoRefreshRate;
     private bool _autoResolution;
+    private bool _isXboxHdmiIntigrationAllowed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
@@ -35,6 +36,7 @@ public sealed class SettingsViewModel : ObservableObject, IDisposable
 
         AutoRefreshRate = Central.Settings.AutoRefreshRate;
         AutoResolution = Central.Settings.AutoResolution;
+        IsXboxHdmiIntegrationAllowed = Central.Settings.IsXboxHdmiIntegrationAllowed;
 
         _navigationHandler = _gamepadManager.ObserveBackEvent(ModalPage_BackRequested, -10);
 
@@ -67,6 +69,15 @@ public sealed class SettingsViewModel : ObservableObject, IDisposable
     {
         get => _autoResolution;
         set => SetProperty(ref _autoResolution, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Xbox HDMI integration is enabled and a device setup should be attempted.
+    /// </summary>
+    public bool IsXboxHdmiIntegrationAllowed
+    {
+        get => _isXboxHdmiIntigrationAllowed;
+        set => SetProperty(ref _isXboxHdmiIntigrationAllowed, value);
     }
 
     /// <summary>
@@ -114,6 +125,8 @@ public sealed class SettingsViewModel : ObservableObject, IDisposable
             Central.Settings.AutoRefreshRate = AutoRefreshRate;
             Central.Settings.AutoResolution = AutoResolution;
         }
+
+        Central.Settings.IsXboxHdmiIntegrationAllowed = IsXboxHdmiIntegrationAllowed;
     }
 
     /// <inheritdoc />

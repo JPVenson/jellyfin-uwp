@@ -51,6 +51,8 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <CheckBox
@@ -82,10 +84,24 @@
                     Display resolution is not supported on this device.
                 </TextBlock>
 
+                <CheckBox
+                    IsChecked="{Binding IsXboxHdmiIntegrationAllowed}"
+                    Content="Enable HDMI mode setup."
+                    Foreground="White" FontSize="{StaticResource FontL}"
+                    Grid.Row="4" />
+                <TextBlock Visibility="{Binding ElementName=checkBoxAutoRefreshRate, Path=IsEnabled, Converter={StaticResource BooleanVisibilityInverseConverter}}"
+                           Grid.Row="5"
+                           FontSize="{StaticResource FontM}"
+                           Foreground="{StaticResource Color100}">
+                    The app must be restarted for these changes to take effect. <LineBreak />
+                    Attempts to update connected HDMI monitors and enables HDR/4K playback.
+
+                </TextBlock>
+
                 <Grid
                     HorizontalAlignment="Stretch"
                     Margin="0,30,0,0"
-                    Grid.Row="4">
+                    Grid.Row="6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
