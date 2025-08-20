@@ -318,4 +318,10 @@
   <ItemGroup>
     <Folder Include="Behaviors\Actions\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WinRTAdapter\WinRTAdapter.vcxproj">
+      <Project>{2ee3aeee-5d27-450f-b191-ae8b500299cd}</Project>
+      <Name>WinRTAdapter</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

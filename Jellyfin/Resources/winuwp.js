@@ -2,6 +2,13 @@
     'use strict';
 
     console.log('Windows UWP adapter');
+    if (chrome && chrome.webview) {
+        console.log('Setting up WinRT projection options');
+        chrome.webview.hostObjects.options.defaultSyncProxy = true;
+        chrome.webview.hostObjects.options.forceAsyncMethodMatches = [/Async$/, /AsyncWithSpeller$/];
+        chrome.webview.hostObjects.options.ignoreMemberNotFoundError = true;
+        window.WindowsProxy = chrome.webview.hostObjects.sync.Windows;
+    }
 
     const xbox = deviceName.toLowerCase().indexOf('xbox') !== -1;
     const xboxSeries = deviceName.toLowerCase().indexOf('xbox series') !== -1;

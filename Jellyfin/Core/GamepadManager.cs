@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Jellyfin.Core.Contract;
+using Windows.Media;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
 
 namespace Jellyfin.Core;
 

@@ -38,13 +38,14 @@ public class MessageHandler : IMessageHandler
         var eventType = json.GetNamedString("type");
         var args = json.GetNamedObject("args");
 
+        await Task.CompletedTask;
         if (eventType == "enableFullscreen")
         {
-            await _fullScreenManager.EnableFullscreenAsync(args).ConfigureAwait(true);
+            // await _fullScreenManager.EnableFullscreenAsync(args).ConfigureAwait(true);
         }
         else if (eventType == "disableFullscreen")
         {
-            await _fullScreenManager.DisableFullScreen().ConfigureAwait(true);
+            // await _fullScreenManager.DisableFullScreen().ConfigureAwait(true);
         }
         else if (eventType == "selectServer")
         {

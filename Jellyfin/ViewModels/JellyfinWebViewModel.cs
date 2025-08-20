@@ -165,10 +165,19 @@ public sealed class JellyfinWebViewModel : ObservableObject, IDisposable
             Application.Current.Exit();
         }
 
+        await AddWinRTAdapter().ConfigureAwait(true);
+
         AddDeviceFormToUserAgent();
         await InjectNativeShellScript().ConfigureAwait(true);
 
         WebView.Source = uri;
+    }
+
+    private async Task AddWinRTAdapter()
+    {
+        await Task.CompletedTask;
+        var dispatchAdapter = new WinRTAdapter.DispatchAdapter();
+        WebView.CoreWebView2.AddHostObjectToScript("Windows", dispatchAdapter.WrapNamedObject("Windows", dispatchAdapter));
     }
 
     private async Task InjectNativeShellScript()
@@ -213,8 +222,21 @@ public sealed class JellyfinWebViewModel : ObservableObject, IDisposable
         // Set useragent to Xbox and WebView2 since WebView2 only sets these in Sec-CA-UA, which isn't available over HTTP.
 
         WebView.CoreWebView2.Settings.UserAgent += " WebView2 " + AppUtils.GetDeviceFormFactorType().ToString();
+        // Change some settings on the WebView. Check the documentation for more options:
+        // https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2settings
+        WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+        WebView.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+        WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
+        WebView.CoreWebView2.Settings.IsStatusBarEnabled = false;
 
-        WebView.CoreWebView2.Settings.IsGeneralAutofillEnabled = false; // Disable autofill on Xbox as it puts down the virtual keyboard.
+        // This turns off SmartScreen, which can have some performance impact.
+        WebView.CoreWebView2.Settings.IsReputationCheckingRequired = false;
+
+        // This prevents the user from opening the DevTools with F12, it does not prevent you from
+        // attaching the Edge Dev Tools yourself.
+        WebView.CoreWebView2.Settings.AreDevToolsEnabled = true;
+        Environment.SetEnvironmentVariable("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "--enable-features=msEdgeDevToolsWdpRemoteDebugging");
+
         WebView.CoreWebView2.ContainsFullScreenElementChanged += JellyfinWebView_ContainsFullScreenElementChanged;
     }
 
