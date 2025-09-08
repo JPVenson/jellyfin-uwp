@@ -36,6 +36,7 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
     private readonly Frame _frame;
     private readonly ApplicationView _applicationView;
     private readonly ILogger<JellyfinWebViewModel> _logger;
+    private readonly IWaiterService _waiterService;
     private bool _isInProgress;
     private bool _displayDeprecationNotice;
     private WebView2 _webView;
@@ -51,6 +52,7 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
     /// <param name="applicationView">Application view for managing the app's view state.</param>
     /// <param name="logger">The logger instance.</param>
     /// <param name="messenger">The Messenger service.</param>
+    /// <param name="waiterService">The global Waiter service.</param>
     public JellyfinWebViewModel(
         INativeShellScriptLoader nativeShellScriptLoader,
         IMessageHandler messageHandler,
@@ -59,7 +61,8 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
         Frame frame,
         ApplicationView applicationView,
         ILogger<JellyfinWebViewModel> logger,
-        IMessenger messenger) : base(messenger)
+        IMessenger messenger,
+        IWaiterService waiterService) : base(messenger)
     {
         _nativeShellScriptLoader = nativeShellScriptLoader;
         _messageHandler = messageHandler;
@@ -68,11 +71,12 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
         _frame = frame;
         _applicationView = applicationView;
         _logger = logger;
+        _waiterService = waiterService;
         _logger.LogInformation("JellyfinWebViewModel Initialising.");
         _navigationHandler = _gamepadManager.ObserveBackEvent(WebView_BackRequested, 0);
 
         Central.Settings.JellyfinServerAccessToken = null;
-        IsInProgress = true;
+        _waiterService.Enqueue(new );
         Messenger.Register(this);
 
         if (Central.Settings.JellyfinServerValidated)
@@ -88,15 +92,6 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
             _logger.LogInformation("Server is not validated yet.");
             BeginServerValidation();
         }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the WebView is currently loading.
-    /// </summary>
-    public bool IsInProgress
-    {
-        get => _isInProgress;
-        set => SetProperty(ref _isInProgress, value);
     }
 
     /// <summary>

@@ -134,9 +134,13 @@
     </Compile>
     <Compile Include="Behaviors\AutoFocusBehavior.cs" />
     <Compile Include="Behaviors\KeyEventTriggerBehavior.cs" />
+    <Compile Include="Behaviors\WaiterDisplayBehavior.cs" />
     <Compile Include="Controls\DeviceFamilyStateTrigger.cs" />
     <Compile Include="Controls\JellyfinWebView.xaml.cs">
       <DependentUpon>JellyfinWebView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WaiterDisplay.xaml.cs">
+      <DependentUpon>WaiterDisplay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\BooleanInverseConverter.cs" />
     <Compile Include="Converter\BooleanVisibilityConverter.cs" />
@@ -150,10 +154,14 @@
     <Compile Include="Core\Contract\IMessageHandler.cs" />
     <Compile Include="Core\Contract\INativeShellScriptLoader.cs" />
     <Compile Include="Core\Contract\ISettingsManager.cs" />
+    <Compile Include="Core\IProgressQueueElement.cs" />
+    <Compile Include="Core\Contract\IWaiterService.cs" />
     <Compile Include="Core\MessageHandler.cs" />
     <Compile Include="Core\NativeShellScriptLoader.cs" />
     <Compile Include="Core\RollingAppLoggerProvider.cs" />
     <Compile Include="Core\SettingsManager.cs" />
+    <Compile Include="Core\WaiterService.cs" />
+    <Compile Include="Core\WaiterStateChangedMessage.cs" />
     <Compile Include="Core\WebMessage.cs" />
     <Compile Include="Helpers\UrlValidator.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -169,6 +177,7 @@
     <Compile Include="ViewModels\JellyfinWebViewModel.cs" />
     <Compile Include="ViewModels\OnBoardingViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\WaiterDisplayViewModel.cs" />
     <Compile Include="Views\OnBoarding.xaml.cs">
       <DependentUpon>OnBoarding.xaml</DependentUpon>
     </Compile>
@@ -247,6 +256,10 @@
     <Page Include="Controls\JellyfinWebView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\WaiterDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>

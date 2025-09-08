@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:Jellyfin.ViewModels"
+    xmlns:controls="using:Jellyfin.Controls"
     mc:Ignorable="d"
     d:DesignHeight="400"
     d:DesignWidth="800"
@@ -40,10 +41,13 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
-            <ContentPresenter HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Content="{Binding  WebView}">
-            </ContentPresenter>
+            <controls:WaiterDisplay>
+                <ContentPresenter HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Content="{Binding  WebView}">
+                </ContentPresenter>
+            </controls:WaiterDisplay>
+          
             <!-- WebView2 is created programatically otherwise it won't gain focus -->
             <Grid Grid.Row="0"
                   Background="{StaticResource OverlayColorBG}"
