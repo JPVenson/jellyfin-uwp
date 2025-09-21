@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -34,4 +35,14 @@ public record JellyfinServerValidationResult
     /// Gets the error message if the validation failed.
     /// </summary>
     public string ErrorMessage { get; private set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the error is temporary (e.g. server is starting up).
+    /// </summary>
+    public bool IsTemporaryError { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Retry-After duration if the error is temporary and the server provided this header.
+    /// </summary>
+    public TimeSpan? Retry { get; set; }
 }

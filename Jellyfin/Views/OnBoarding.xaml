@@ -12,37 +12,39 @@
     d:DataContext="{d:DesignInstance viewModels:OnBoardingViewModel}">
 
     <Grid Background="{StaticResource Color0}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="200" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
 
-        <Grid Background="{StaticResource Color10}">
-            <Image
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Background="{StaticResource Color10}">
+                <Image
                 Source="/Assets/OnBoardingLogo.png"
                 Stretch="Uniform"
                 HorizontalAlignment="Center"
                 Height="80" />
-        </Grid>
+            </Grid>
 
-        <Grid Grid.Row="1"
+            <Grid Grid.Row="1"
               Padding="0 40 0 0">
-            <Grid
+                <Grid
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Width="640"
                 Margin="0,0,80,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock
                     Text="Connect to Jellyfin Server"
                     Grid.Column="1"
                     Grid.Row="0"
@@ -50,7 +52,7 @@
                     FontSize="{StaticResource FontL}"
                     Margin="0 0 0 28" FontFamily="{StaticResource JellyfinFamilyFont}"
                     HorizontalAlignment="Center" />
-                <TextBox
+                    <TextBox
                     Text="{Binding ServerUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Style="{StaticResource PrimaryTextBox}"
                     Margin="0 8 0 8"
@@ -58,62 +60,62 @@
                     PlaceholderText="ex: 192.168.1.100:8096 or demo.jellyfin.org"
                     Grid.Column="1"
                     Grid.Row="1">
-                    <interactivity:Interaction.Behaviors>
-                        <interactivity:BehaviorCollection>
-                            <behaviors:AutoFocusBehavior FocusOnEnable="True" />
-                            <behaviors:KeyEventTriggerBehavior>
-                                <behaviors:KeyEventTriggerBehavior.Filter>
-                                    <KeyboardAccelerator Key="Enter" />
-                                </behaviors:KeyEventTriggerBehavior.Filter>
-                                <interactivity:InvokeCommandAction Command="{Binding ConnectCommand}" />
-                            </behaviors:KeyEventTriggerBehavior>
-                        </interactivity:BehaviorCollection>
-                    </interactivity:Interaction.Behaviors>
-                </TextBox>
+                        <interactivity:Interaction.Behaviors>
+                            <interactivity:BehaviorCollection>
+                                <behaviors:AutoFocusBehavior FocusOnEnable="True" />
+                                <behaviors:KeyEventTriggerBehavior>
+                                    <behaviors:KeyEventTriggerBehavior.Filter>
+                                        <KeyboardAccelerator Key="Enter" />
+                                    </behaviors:KeyEventTriggerBehavior.Filter>
+                                    <interactivity:InvokeCommandAction Command="{Binding ConnectCommand}" />
+                                </behaviors:KeyEventTriggerBehavior>
+                            </interactivity:BehaviorCollection>
+                        </interactivity:Interaction.Behaviors>
+                    </TextBox>
 
-                <Button
+                    <Button
                     Style="{StaticResource PrimaryButton}"
                     Content="Connect"
                     Command="{Binding ConnectCommand}"
                     Grid.Column="1"
                     Grid.Row="2" />
 
-                <StackPanel
+                    <StackPanel
                     Grid.Column="1"
                     Grid.Row="3"
                     Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
-                    <TextBlock
+                        <TextBlock
                         FontFamily="{StaticResource JellyfinFamilyFont}"
+                        FontSize="{StaticResource FontM}"
                         Text="{Binding ErrorMessage}"
                         HorizontalAlignment="Center"
                         TextAlignment="Center"
                         TextWrapping="Wrap"
-                        FontSize="{StaticResource FontM}"
                         Margin="1 1 1 20"
                         Foreground="{StaticResource DangerColor}" />
 
-                    <TextBlock Text="Attempted to connect to:"
+                        <TextBlock Text="Attempted to connect to:"
                                Foreground="{StaticResource DangerColor}"/>
-                    <ItemsControl ItemsSource="{Binding TestedUris}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:Key="UriDataTemplate">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="- "
+                        <ItemsControl ItemsSource="{Binding TestedUris}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:Key="UriDataTemplate">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="- "
                                                Margin="0,0,8,0"
                                                Foreground="{StaticResource DangerColor}"/>
-                                    <TextBlock Text="{Binding }"
+                                        <TextBlock Text="{Binding }"
                                                Foreground="{StaticResource DangerColor}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
 
+                </Grid>
             </Grid>
         </Grid>
 
         <Grid Grid.Row="0"
-              Grid.RowSpan="2"
               Background="{StaticResource OverlayColorBG}"
               Visibility="{Binding IsInProgress, Converter={StaticResource BooleanVisibilityConverter}}">
             <ProgressRing Width="250" Height="250" IsActive="True" Visibility="Visible" />

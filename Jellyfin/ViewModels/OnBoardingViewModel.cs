@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Jellyfin.Core;
 using Jellyfin.Helpers;
 using Jellyfin.Utils;
+using Jellyfin.Views;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -122,6 +123,21 @@ public sealed class OnBoardingViewModel : ObservableObject
 
                     if (!jellyfinServerCheck.IsValid)
                     {
+                        if (jellyfinServerCheck.IsTemporaryError)
+                        {
+                            _ = _dispatcher.RunAsync(
+                                CoreDispatcherPriority.Normal,
+                                () =>
+                                {
+                                    // Save validated URL and navigate to page containing the web view.
+                                    Central.Settings.JellyfinServer = uriVarient.ToString();
+                                    Central.Settings.JellyfinServerValidated = false;
+
+                                    _frame.Navigate(typeof(BusyWaiterView), jellyfinServerCheck);
+                                });
+                            return;
+                        }
+
                         continue;
                     }
 

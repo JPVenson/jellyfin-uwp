@@ -165,12 +165,17 @@
     <Compile Include="Core\Contract\IGamepadManager.cs" />
     <Compile Include="Utils\JellyfinServerValidationResult.cs" />
     <Compile Include="Utils\ServerCheckUtil.cs" />
+    <Compile Include="ViewModels\BusyWaiterViewModel.cs" />
     <Compile Include="ViewModels\JellyfinWebViewModel.cs" />
     <Compile Include="ViewModels\OnBoardingViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="Views\BusyWaiterView.xaml.cs">
+      <DependentUpon>BusyWaiterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OnBoarding.xaml.cs">
       <DependentUpon>OnBoarding.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OnBoardingParameter.cs" />
     <Compile Include="Views\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -262,6 +267,10 @@
     <Page Include="Resources\JellyfinStyleResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BusyWaiterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OnBoarding.xaml">
       <Generator>MSBuild:Compile</Generator>

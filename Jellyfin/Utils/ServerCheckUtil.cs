@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -46,9 +48,10 @@ public static class ServerCheckUtil
                 basePath = basePath.Substring(0, basePath.Length - WebUIBasePath.Length);
             }
 
-            var infoUri = new Uri(basePath + ApiSystemInfoRoute);
+            var infoUri = new UriBuilder(basePath);
+            infoUri.Path = ApiSystemInfoRoute;
 
-            using var response = await httpClient.GetAsync(infoUri).ConfigureAwait(true);
+            using var response = await httpClient.GetAsync(infoUri.Uri).ConfigureAwait(true);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -58,6 +61,24 @@ public static class ServerCheckUtil
             }
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+            if (headResponse.StatusCode == HttpStatusCode.ServiceUnavailable)
+            {
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    var result = ValidateJellyfinServerResponse(content);
+                    if (!result.IsValid)
+                    {
+                        return result;
+                    }
+
+                    return new JellyfinServerValidationResult(true, null)
+                    {
+                        IsTemporaryError = true,
+                        Retry = response.Headers.RetryAfter.Delta
+                    };
+                }
+            }
 
             // Check if the response is from a supported Jellyfin server.
             return ValidateJellyfinServerResponse(content);

@@ -1,6 +1,7 @@
 using Jellyfin.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Views;
 
@@ -16,5 +17,13 @@ public sealed partial class OnBoarding : Page
     {
         InitializeComponent();
         DataContext = App.Current.Services.GetRequiredService<OnBoardingViewModel>();
+    }
+
+    /// <inheritdoc />
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        var onboardingViewModel = (OnBoardingViewModel)DataContext;
+        onboardingViewModel.ErrorMessage = (e.Parameter as OnBoardingParameter)?.ErrorMessage;
     }
 }

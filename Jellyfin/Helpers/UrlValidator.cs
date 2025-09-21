@@ -34,21 +34,37 @@ public static class UrlValidator
             return (false, null, "Please enter a valid server URL.");
         }
 
-        uriCandidates.Add(uri);
-
-        if (!uri.IsAbsoluteUri || string.IsNullOrWhiteSpace(uri.Scheme))
+        if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+        {
+            uriCandidates.Add(uri);
+        }
+        else
         {
             if (!uri.IsAbsoluteUri || uri.Port == 0)
             {
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttps, Port = 443 }.Uri);
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttp, Port = 80 }.Uri);
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttps, Port = 8920 }.Uri);
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttp, Port = 8096 }.Uri);
+                uriCandidates.Add(new UriBuilder(uri) { Scheme = Uri.UriSchemeHttps, Port = 443 }.Uri);
+                uriCandidates.Add(new UriBuilder(uri) { Scheme = Uri.UriSchemeHttp, Port = 80 }.Uri);
+                uriCandidates.Add(new UriBuilder(uri) { Scheme = Uri.UriSchemeHttps, Port = 8920 }.Uri);
+                uriCandidates.Add(new UriBuilder(uri) { Scheme = Uri.UriSchemeHttp, Port = 8096 }.Uri);
             }
             else
             {
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttps }.Uri);
-                uriCandidates.Add(new UriBuilder(input) { Scheme = Uri.UriSchemeHttp }.Uri);
+                int.TryParse(uri.AbsolutePath, out var portInPath);
+                // if the scheme is not http/https the actual host is probably in the scheme part
+                uriCandidates.Add(new UriBuilder(uri)
+                {
+                    Host = uri.Scheme,
+                    Scheme = Uri.UriSchemeHttps,
+                    Port = portInPath == -1 ? 443 : portInPath,
+                    Path = portInPath == -1 ? uri.AbsolutePath : string.Empty
+                }.Uri);
+                uriCandidates.Add(new UriBuilder(uri)
+                {
+                    Host = uri.Scheme,
+                    Scheme = Uri.UriSchemeHttp,
+                    Port = portInPath == -1 ? 80 : portInPath,
+                    Path = portInPath == -1 ? uri.AbsolutePath : string.Empty
+                }.Uri);
             }
         }
 
