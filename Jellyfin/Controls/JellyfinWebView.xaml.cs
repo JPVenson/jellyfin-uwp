@@ -1,5 +1,7 @@
+using System;
 using Jellyfin.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Windows.UI.Xaml;
 
 namespace Jellyfin.Controls;
 
@@ -15,5 +17,12 @@ public sealed partial class JellyfinWebView
     {
         InitializeComponent();
         DataContext = App.Current.Services.GetRequiredService<JellyfinWebViewModel>();
+        Loaded += JellyfinWebView_Loaded;
+    }
+
+    private void JellyfinWebView_Loaded(object sender, RoutedEventArgs e)
+    {
+        Loaded -= JellyfinWebView_Loaded;
+        (DataContext as JellyfinWebViewModel)?.InitializeWebView();
     }
 }

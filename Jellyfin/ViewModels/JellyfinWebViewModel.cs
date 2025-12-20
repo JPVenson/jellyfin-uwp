@@ -74,25 +74,6 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
         Central.Settings.JellyfinServerAccessToken = null;
         IsInProgress = true;
         Messenger.Register(this);
-
-        if (Central.Settings.JellyfinServerValidated)
-        {
-            _logger.LogInformation("Server is validated proceed to initialise webview.");
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(500).ConfigureAwait(true); // this delay is nessesary to have the UI rendered at least before allowing to focus it
-                _ = _dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
-                {
-                    await Task.Yield();
-                    await InitialiseWebView().ConfigureAwait(true);
-                });
-            });
-        }
-        else
-        {
-            _logger.LogInformation("Server is not validated yet.");
-            BeginServerValidation();
-        }
     }
 
     /// <summary>
@@ -392,6 +373,24 @@ public sealed class JellyfinWebViewModel : ObservableRecipient, IDisposable, IRe
                     IsInProgress = false;
                 });
                 break;
+        }
+    }
+
+    internal void InitializeWebView()
+    {
+        if (Central.Settings.JellyfinServerValidated)
+        {
+            _logger.LogInformation("Server is validated proceed to initialise webview.");
+            _ = _dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
+            {
+                await Task.Yield();
+                await InitialiseWebView().ConfigureAwait(true);
+            });
+        }
+        else
+        {
+            _logger.LogInformation("Server is not validated yet.");
+            BeginServerValidation();
         }
     }
 }
